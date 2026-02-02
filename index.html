@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSocket Messaging Client</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 20px;
+        }
+
+        #chat {
+            border: 1px solid #334155;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #020617;
+        }
+
+        input {
+            padding: 8px;
+            width: 70%;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            padding: 8px 12px;
+            background: #22c55e;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .msg-me {
+            color: #22c55e;
+        }
+
+        .msg-server {
+            color: #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>🚀 WebSocket Messaging Demo</h2>
+
+    <div id="chat"></div>
+
+    <input id="msgInput" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+
+        const chat = document.getElementById("chat");
+        const input = document.getElementById("msgInput");
+        // onopen , onmessage , onclose
+        const socket = new WebSocket("ws://localhost:8080");
+        socket.onopen = () => {
+            log("connection established", 'Server');
+        }
+        socket.onmessage = (event)=>{
+            log("received " + event.data)
+        }
+        socket.onclose = () => {
+            log("connection closed", 'Server');
+
+        }
+
+        function sendMessage() {
+            const message = input.value;
+            if (!message) return;
+
+            socket.send(message);
+            log("Me: " + message, "me");
+
+            input.value = "";
+        }
+        function log(text, type) {
+            const p = document.createElement("p");
+            p.className = type === "me" ? "msg-me" : "msg-server";
+            p.innerText = text;
+            chat.appendChild(p);
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+
+</body>
+
+</html>
